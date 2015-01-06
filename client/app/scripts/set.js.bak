@@ -1,0 +1,337 @@
+/**
+ * Set Game
+ *
+ */
+'use strict';
+
+(function() {
+
+  function SetGame() {
+
+    this.score            = 0;  // Current score (number of Sets found)
+    this.initialBoardSize = 12; // Size of initial board, in number of cards
+    this.selectedCards    = []; // Currently selected cards (card number)
+    this.errors           = []; // Error stack for non-Set trios
+    this.sets             = []; // All currently possible sets (please optimize to use this more)
+    this.deck             = []; // All cards
+    this.unusedCards;          // Number of unused cards
+    this.board            = []; // Cards currently on the board
+    this.cardsPerRow      = 3;  // Number of cards in each row (for laying out a new row when no sets exist)
+
+    // All the available card attributes. There is one card for every combination of each attribute value
+    // (i.e. total cards = shape.length * color.length * count.length * fill.length)
+    this.attributes   = {shape : ['squiggle', 'diamond', 'pill'],
+                         color : ['red', 'purple', 'green'],
+                         count : [1, 2, 3],
+                         fill  : ['solid', 'semi', 'empty']
+                        };
+
+    /* ======================== INIT WORK GOES HERE ======================== */
+
+    /* ======================== CORE CARD FUNCTIONALITY ======================== */
+
+      
+    /**
+     * Removes a card from the board
+     *
+     * @param int board_space
+     */
+    this.removeCard = function(boardPlace) {
+      
+      // Make sure this button exists
+      if (!this.board[boardPlace]) {
+        return false;
+      }
+      
+      // Undo the YUI buttonness and remove the card from the board
+      this.board[boardPlace].destroy();
+      this.board.splice(boardPlace, 1);
+      
+    };
+        
+  }
+
+  /**
+   * Adds another row of cards to the playing field
+   * Expands the size of the playing field to accomodate another row
+   * of cards and adds 3 cards to the field.
+   **/
+  SetGame.prototype.addRow = function() {
+    for (var i = 0; i < this.cardsPerRow; i++) {
+      this.addCard();
+    }
+  };
+    
+  SetGame.prototype.getNewCard = function(btn_num) {
+    
+    // If there are no more unused cards left, get out of here
+    if (!this.unusedCards) {
+      return;
+    }
+    
+    var cards = this.deck;
+    function getAvailableCard() {
+      var random = Math.floor(Math.random()*81) + 1; // Get a random number from 1-81
+      return (!cards[random].status) ? random : getAvailableCard();
+    }
+    
+    var card = getAvailableCard();
+    
+    this.board[btn_num].set('value', card);
+    this.board[btn_num].set('title', this.attributes.count[ cards[card].count ].toString() + ' ' + this.attributes.fill[ cards[card].fill ] + ' ' + this.attributes.color[ cards[card].color ] + ' ' + this.attributes.shape[ cards[card].shape] );
+    this.board[btn_num].set('label', 'Card ' + card.toString() );
+    
+    var real_btn = this.board[btn_num].getElementsByTagName('button');
+    Dom.setStyle(real_btn[0], 'background', 'url(cards/'+ card.toString() +'.gif)');
+    
+    this.deck[card].status = -1;
+    this.unusedCards--;
+    return card;
+  };
+
+    /**
+     * Tutorial mode shows third card
+     **/
+    SetGame.prototype.tutorialFinishSet = function() {
+
+      // Exactly two cards must be selected
+      if (this.selectedCards.length !== 2) {
+        alert('You must first select two cards for comparison.');
+        return false;
+      }
+      
+      var that = this;
+      
+      /**
+       * Finds what the third card would be to make a set from two cards
+       * Takes two cards and returns the third card that would fill out the
+       * Set. 
+       * @param {obj} First card in Set
+       * @param {obj} Second card in Set
+       * @param {bool} (optional, default = false) Check for the third card on the board
+       * @return {obj} The card that finishes the Set
+       **/
+      function findThird(cardFirst, cardSecond) {
+        
+            // Find the missing third attribute value given the other two values
+            function missingAttributeValue(attribute, val1, val2) {
+                for (var i = 0; i < that.attributes[attribute].length; i++) {
+                    if (i !== val1 && i !== val2) {
+                        return i;
+                    }
+                }
+            }
+
+            // Populate the values for each attribute of the third card
+            var third_card = {};
+            for (var attribute in that.attributes) {
+                third_card[attribute] = (cardFirst[attribute] === cardSecond[attribute]) ? cardFirst[attribute] : missingAttributeValue(attribute, cardFirst[attribute], cardSecond[attribute]);
+            }
+            return third_card;
+        }
+        
+        third_card = findThird(this.deck[this.selectedCards[0]], this.deck[this.selectedCards[1]], true);
+        
+        // Validate that the found card is on the board
+        var found = false;
+
+        // For each card on the board...
+        for (var i=0; i<this.board.length; i++) {
+            
+            // Do all the properties match what we're looking for? If so, then the card is on the board
+            var match = true;
+            for (attribute in this.attributes) {
+                if (third_card[attribute] !== this.deck[this.board[i].get('value')][attribute]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (!match) {
+                continue;
+            }
+            else {
+                // Set the focus to the found button so it can be styled
+                this.board[i].focus();
+                return true;
+            }
+        }
+
+        var msg = 'The third card would be ' + this.translateCard(third_card);
+        msg += ".\nThis card is not on the board.";
+        alert(msg);
+        for (var i=0; i<this.board.length; i++) {
+            this.board[i].set('checked', false);
+        }
+        this.selectedCards = [];
+        return false;
+        
+    }
+
+
+    /**
+     * Tutorial for showing all sets
+     **/
+    SetGame.prototype.tutorialFindSets = function() {
+
+        if (!this.findAllSets()) {
+            alert("There are no more Sets. You should reset the game and start over.");
+            return false;
+        }
+        var msg = '';
+        if (this.sets.length === 1) {
+            msg = 'There is 1 possible Set.';
+        }
+        else {
+            msg = 'There are ' + this.sets.length + ' possible Sets.';
+        }
+        for (var i=0; i<this.sets.length; i++) {
+            msg += "\n- Cards ";
+            for (var j=0; j<this.sets[i].length; j++) {
+                if (j) {
+                    msg += ', ';
+                }
+                msg += this.sets[i][j] + 1;
+            }
+        }
+        alert(msg);
+        return true;
+    };
+        
+    /**
+     * Finds all sets on the playing field
+     **/
+    SetGame.prototype.findAllSets = function() {
+
+      // Reset the sets container
+      this.sets = [];
+      
+      // For each card on the board
+      for (var cardFirst = 0; cardFirst < this.board.length; cardFirst++) {
+        
+        // For each card after the first card
+        for (var cardSecond=(cardFirst+1); cardSecond<this.board.length; cardSecond++) {
+          
+          // For each card after the second card
+          for (var cardThird=(cardSecond+1); cardThird<this.board.length; cardThird++) {
+            if (this.checkSet(this.deck[this.board[cardFirst].get('value')], this.deck[this.board[cardSecond].get('value')], this.deck[this.board[cardThird].get('value')])) {
+              this.sets.push([cardFirst, cardSecond, cardThird]);
+            }
+          }
+        }
+        
+      }
+      
+      return this.sets.length;
+    };
+        
+    /**
+     * Handler for selected/unselected card
+     * Checks if there are 3 selected cards. If so, makes the call to validate
+     * the Set. If not, adds the card to the selected card stack.
+     **/
+    SetGame.prototype.toggleCard = function(e, scope) {
+        
+        if (this.get('checked')) {
+
+            // Don't allow more than 3 cards to be selected at once
+            if (scope.selectedCards.length === 3) {
+                this.set('checked', false);
+                return;
+            }
+
+            // Add this card to the selected card stack if
+            scope.selectedCards.push(this.get('value'));
+            
+            // If 3 cards are selected, validate the Set
+            if (scope.selectedCards.length === 3) {
+                
+                if (scope.checkSet(scope.cards[ scope.selectedCards[0] ], scope.cards[ scope.selectedCards[1] ], scope.cards[ scope.selectedCards[2] ])) {
+
+                    // Set the selected cards to discarded
+                    for (var i = 0; i < 3; i++) {
+                        scope.cards[ scope.selectedCards[i] ].status = 1;
+                        for (var j = 0; j < scope.board.length; j++) {
+                            if (scope.board[j].get('value') === scope.selectedCards[i]) {
+
+                                if (scope.board.length > scope.initialBoardSize) {
+                                    scope.removeCard(j);
+                                }
+                                else {
+                                    scope.getNewCard(j);
+                                    scope.board[j].set('checked', false);
+                                }
+
+                            }
+                        }
+                    }
+                    
+                    // I don't care how naughty innerHTML is, this is an easy way to update the score
+                    scope.score++;                    
+                    Dom.get('score').innerHTML = scope.score.toString();
+
+                    // If there are no more sets, let the player know
+                    if (!scope.findAllSets()) {
+                        alert('No more sets!');
+                    }
+                }
+                else {
+                  var err_str = 'Not a set!';
+                  for (var i = 0; i < scope.errors.length; i++) {
+                    err_str += '- ' + scope.errors[i];
+                  }
+                  alert(err_str);                    
+                  for (var i = 0; i < scope.board.length; i++) {
+                    scope.board[i].set('checked', false);
+                  }
+                }
+
+                scope.selectedCards = [];
+
+            }
+
+        }
+        else {
+            for (var i = 0; i < scope.selectedCards.length; i++) {
+                if (scope.selectedCards[i] === this.get('value')) {
+                    scope.selectedCards.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+    };
+
+    /**
+     * Determines if 3 cards make a set
+     * For each of the 4 set properties (color, shape, count, fill), determines if
+     * the 3 cards are all the same or all different in value. For example, for the color
+     * property the cards can be (one red, one green, one purple) or all red or all green
+     * or all purple. The only time the 3 cards make a set is if each property passes the
+     * all same or all different test.
+     * @return {bool} Whether or not the three cards make a set
+     **/
+    SetGame.prototype.checkSet = function(cardFirst, cardSecond, cardThird) {
+
+        function isSame(val1, val2, val3) {
+            return (val1 === val2 && val2 === val3);
+        }
+
+        function isDifferent(val1, val2, val3) {
+            return !(val1 === val2 || val1 === val3 || val2 === val3);
+        }
+
+        // Clear the error stack for new trio verification
+        this.errors = [];
+
+        // For each property, the 3 values must be all the same or all different        
+        for (attribute in this.attributes) {
+            if (!isSame(cardFirst[attribute], cardSecond[attribute], cardThird[attribute]) && !isDifferent(cardFirst[attribute], cardSecond[attribute], cardThird[attribute])) {
+                this.errors.push(attribute);
+            }
+        }
+
+        return !!!(this.errors.length);
+
+    };
+
+}());
