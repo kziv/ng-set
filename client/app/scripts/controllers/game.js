@@ -13,6 +13,20 @@ angular.module('clientApp')
     $scope.game  = game;
     $scope.error = {};
 
+    function setMessage(message, type) {
+
+      var style = type;
+      switch (type) {
+        case 'error' :
+          style = 'danger';
+          break;
+      }
+      $scope.error = {
+        message: message,
+        style: 'alert-' + style
+      };
+    }
+
     $scope.newGame = function() {
       $scope.game = new SetGame();
     };
@@ -36,7 +50,7 @@ angular.module('clientApp')
           if (board.selectedCards.length === SetGameBoard.maxSelectedCards) {
             var isSet = board.checkSet();
             if (isSet) {
-              $scope.error = {message: 'This is a set!', style: 'alert-success'};
+              setMessage('This is a set!', 'success');
               $scope.game.board.removeSelectedCards();
               $scope.game.score++;
               // Play the next 3 cards
@@ -46,7 +60,7 @@ angular.module('clientApp')
               $scope.game.board.addRow();
             }
             else {
-              $scope.error = {message: 'Not a set!', style : 'alert-danger'};
+              setMessage('Not a set!', 'error');
               $scope.game.board.deselectAllCards();
               $('.' + selectedClass).removeClass(selectedClass); // @todo replace this with event listener for invalid set completed
             }
