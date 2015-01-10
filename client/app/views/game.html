@@ -1,13 +1,18 @@
-<div id="gameboard" class="jumbotron">
+<button type="button" class="btn btn-primary" ng-click="newGame()">New Game</button>
+
+<div class="jumbotron">
   <div class="row">
     <h4 class="pull-left">Remaining Cards: {{game.deck.cards.length}}</h4>
     <h4 class="pull-right">Sets Found: {{game.score}}</h4>
   </div>
 
-  <div class="alert alert-dismissable alert-danger" role="alert">{{error}}</div>
+  <div class="alert alert-dismissable alert-danger" ng-show="error.length" role="alert">
+    <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+    {{error}}
+  </div>
 
   <div class="card col-md-4" ng-repeat="card in game.board.cards">
-    <img ng-src="/images/cards/{{card.colorText}}-{{card.countText}}-{{card.fillText}}-{{card.shapeText}}.gif" ng-click="selectCard($event, card)" title="{{card.description}}" />
+    <img ng-src="/images/cards/{{card.colorText}}-{{card.countText}}-{{card.fillText}}-{{card.shapeText}}.gif" ng-click="selectCard($event, card)" title="{{card.description}}" class="img-rounded" />
   </div>
 
 </div>
