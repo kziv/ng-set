@@ -6,9 +6,9 @@
     <h4 class="pull-right">Sets Found: {{game.score}}</h4>
   </div>
 
-  <div class="alert alert-dismissable alert-danger" ng-show="error.length" role="alert">
+  <div class="alert alert-dismissable alert-danger" ng-class="error.style" ng-show="error.message.length" role="alert">
     <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
-    {{error}}
+    {{error.message}}
   </div>
 
   <div class="card col-md-4" ng-repeat="card in game.board.cards">

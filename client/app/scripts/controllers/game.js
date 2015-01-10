@@ -10,8 +10,13 @@
 angular.module('clientApp')
   .controller('GameCtrl', function ($scope, game) {
 
-    $scope.game = game;
-    $scope.error = null;
+    $scope.game  = game;
+    $scope.error = {};
+
+    $scope.newGame = function() {
+      $scope.game = new SetGame();
+    };
+
     $scope.selectCard = function(e, card) {
 
       try {
@@ -31,7 +36,7 @@ angular.module('clientApp')
           if (board.selectedCards.length === SetGameBoard.maxSelectedCards) {
             var isSet = board.checkSet();
             if (isSet) {
-              $scope.error = 'This is a set!';
+              $scope.error = {message: 'This is a set!', style: 'alert-success'};
               $scope.game.board.removeSelectedCards();
               $scope.game.score++;
               // Play the next 3 cards
@@ -41,7 +46,7 @@ angular.module('clientApp')
               $scope.game.board.addRow();
             }
             else {
-              $scope.error = 'Not a set!';
+              $scope.error = {message: 'Not a set!', style : 'alert-danger'};
               $scope.game.board.deselectAllCards();
               $('.' + selectedClass).removeClass(selectedClass); // @todo replace this with event listener for invalid set completed
             }
