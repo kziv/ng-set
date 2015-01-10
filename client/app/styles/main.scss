@@ -109,6 +109,11 @@ body {
   }
 }
 
+#messages {
+  height: 50px;
+  margin-bottom: 10px; 
+}
+
 .alert.ng-hide-add.ng-hide-add-active,
 .alert.ng-hide-remove.ng-hide-remove-active {
   -webkit-transition: all linear 0.2s;

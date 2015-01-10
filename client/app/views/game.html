@@ -6,11 +6,12 @@
     <h4 class="pull-right">Sets Found: {{game.score}}</h4>
   </div>
 
-  <div class="alert animate-show" ng-class="error.style" ng-show="error.message.length" role="alert">
-    <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
-    {{error.message}}
+  <div id="messages" class="row">
+    <div class="alert animate-show" ng-class="error.style" ng-show="error.message.length" role="alert">
+      <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+      {{error.message}}
+    </div>
   </div>
-
   <div class="card col-md-4" ng-repeat="card in game.board.cards">
     <img ng-src="/images/cards/{{card.colorText}}-{{card.countText}}-{{card.fillText}}-{{card.shapeText}}.gif" ng-click="selectCard($event, card)" title="{{card.description}}" class="img-rounded" />
   </div>
