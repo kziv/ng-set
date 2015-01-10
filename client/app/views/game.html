@@ -1,6 +1,13 @@
-<button type="button" class="btn btn-primary" ng-click="newGame()">New Game</button>
+<div class="row">
+  <button type="button" class="btn btn-primary" ng-click="newGame()">New Game</button>
 
-<div class="jumbotron">
+  <div class="btn-group pull-right" role="group" aria-label="Tutorial options">
+    <button type="button" class="btn btn-default" ng-click="showMatchingCard()" ng-disabled="game.board.selectedCards.length !== 2">Show Matching Card</button>
+    <button type="button" class="btn btn-default" ng-click="showPossibleSets()">Show Possible Sets</button>
+  </div>
+</div>
+
+<div class="jumbotron row">
   <div class="row">
     <h4 class="pull-left">Remaining Cards: {{game.deck.cards.length}}</h4>
     <h4 class="pull-right">Sets Found: {{game.score}}</h4>

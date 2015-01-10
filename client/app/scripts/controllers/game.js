@@ -79,4 +79,11 @@ angular.module('clientApp')
 
     };
 
+    $scope.showMatchingCard = function() {
+      console.log('show matching card');
+    };
+
+    $scope.showPossibleSets = function() {
+      console.log('show possible sets');
+    };
   });
