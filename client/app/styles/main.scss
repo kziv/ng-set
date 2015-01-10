@@ -94,12 +94,16 @@ body {
 /* ================================ GAME CSS // MOVE THIS LATER ================================ */
 
 .jumbotron {
+  margin-top: 10px;
   overflow: hidden; // Handles floating cards
 }
 
 .card {
   margin-bottom: 30px;
 
+  img {
+    border: 2px solid transparent;
+  }
   &.active img {
     border: 2px solid #000;
   }
