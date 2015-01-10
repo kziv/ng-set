@@ -108,3 +108,15 @@ body {
     border: 2px solid #000;
   }
 }
+
+.alert.ng-hide-add.ng-hide-add-active,
+.alert.ng-hide-remove.ng-hide-remove-active {
+  -webkit-transition: all linear 0.2s;
+  transition: all linear 0.2s;
+}
+
+.alert.ng-hide {
+  line-height: 0;
+  opacity: 0;
+  padding: 0 10px;
+}

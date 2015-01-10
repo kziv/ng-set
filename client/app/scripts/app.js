@@ -21,11 +21,11 @@ var client = angular
     $routeProvider
       .when('/', {
         templateUrl: 'views/game.html',
-        controller: 'GameCtrl'
+        controller: 'GameController'
       })
       .when('/about', {
         templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
+        controller: 'AboutController'
       })
       .otherwise({
         redirectTo: '/'

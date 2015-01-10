@@ -8,7 +8,7 @@
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('GameCtrl', function ($scope, $timeout, game) {
+  .controller('GameController', function ($scope, $timeout, game) {
 
     $scope.game  = game;
     $scope.error = {};
