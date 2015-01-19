@@ -321,6 +321,44 @@ function SetGame() {
 }
 
 /**
+ * Given two cards, finds the third card that would complete a Set.
+ *
+ * @param object card1
+ *   First card in an incomplete Set
+ * @param object card2
+ *   Second card in an incomplete Set
+ *
+ * @return object SetGameCard
+
+ */
+SetGame.prototype.tutorialThirdCard = function(card1, card2) {
+
+  if (!(card1 instanceof SetGameCard) || !(card2 instanceof SetGameCard)) {
+    throw new SetGameException('You must select two cards to find a third matching card.', {card1: card1, card2: card2});
+  }
+
+  // Finds the missing third attribute value given the other two values
+  function missingAttributeValue(attribute, val1, val2) {
+    for (var i = 0; i < SetGameCard.attributes[attribute].length; i++) {
+      if (i !== val1 && i !== val2) {
+        return i;
+      }
+    }
+  }
+  
+  // Populate the values for each attribute of the third card
+  var attributes = {};
+  for (var attribute in SetGameCard.attributes) {
+    attributes[attribute] = (card1[attribute] === card2[attribute]) ? card1[attribute] : missingAttributeValue(attribute, card1[attribute], card2[attribute]);
+  }
+
+  // Create and return a card representing the one that would complete the Set
+  var card3 = new SetGameCard(attributes);
+  return card3;
+  
+};
+
+/**
  * Custom exception for the Set game
  *
  * @param string msg

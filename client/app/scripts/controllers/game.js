@@ -13,6 +13,13 @@ angular.module('clientApp')
     $scope.game  = game;
     $scope.error = {};
 
+    /**
+     * Displays a message to the user
+     * 
+     * @param string message
+     * @param string type
+     *   Allowed values: success, info, warning, danger
+     */
     function setMessage(message, type) {
 
       var style = type;
@@ -80,7 +87,8 @@ angular.module('clientApp')
     };
 
     $scope.showMatchingCard = function() {
-      console.log('show matching card');
+      var matchingCard = $scope.game.tutorialThirdCard($scope.game.board.selectedCards[0], $scope.game.board.selectedCards[1]);
+      setMessage('The third card to complete this Set is: ' + matchingCard.translateCard() + '.', 'info');
     };
 
     $scope.showPossibleSets = function() {
