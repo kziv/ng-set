@@ -329,7 +329,6 @@ function SetGame() {
  *   Second card in an incomplete Set
  *
  * @return object SetGameCard
-
  */
 SetGame.prototype.tutorialThirdCard = function(card1, card2) {
 
@@ -355,6 +354,16 @@ SetGame.prototype.tutorialThirdCard = function(card1, card2) {
   // Create and return a card representing the one that would complete the Set
   var card3 = new SetGameCard(attributes);
   return card3;
+  
+};
+
+/**
+ * Finds all possible Sets on the existing game board.
+ * Note that a given card can be used in more than one Set.
+ *
+ * @question Should the game own this or the board?
+ */
+SetGame.prototype.tutorialActiveSets = function() {
   
 };
 
