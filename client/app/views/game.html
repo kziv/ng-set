@@ -16,7 +16,7 @@
   <div id="messages" class="row">
     <div class="alert animate-show" ng-class="error.style" ng-show="error.message.length" role="alert">
       <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
-      {{error.message}}
+      <span ng-bind-html="error.message"></span>
     </div>
   </div>
   <div class="card col-md-4" ng-repeat="card in game.board.cards">

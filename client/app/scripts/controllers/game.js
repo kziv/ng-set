@@ -19,8 +19,10 @@ angular.module('clientApp')
      * @param string message
      * @param string type
      *   Allowed values: success, info, warning, danger
+     * @param int timeout
+     *   (optional) Time to display message. Use 0 for no autohide.
      */
-    function setMessage(message, type) {
+    function setMessage(message, type, timeout) {
 
       var style = type;
       switch (type) {
@@ -32,9 +34,15 @@ angular.module('clientApp')
         message: message,
         style: 'alert-' + style
       };
-      $timeout(function() {
-        $scope.error = {};
-      }, 1500);
+      // Set a timeout to hide the message
+      if (timeout === undefined) {
+        timeout = 1500;
+      }
+      if (timeout) {
+        $timeout(function() {
+          $scope.error = {};
+        }, timeout);
+      }
     }
 
     $scope.newGame = function() {
@@ -92,6 +100,30 @@ angular.module('clientApp')
     };
 
     $scope.showPossibleSets = function() {
-      console.log('show possible sets');
+      var sets = $scope.game.tutorialActiveSets();
+      var msg = '';
+      if (sets.length === 1) {
+        msg = 'There is 1 possible Set.';
+      }
+      else {
+        msg = 'There are ' + sets.length + ' possible Sets.';
+      }
+      if (sets.length) {
+        msg += '<ul>';
+      }
+      for (var i = 0; i < sets.length; i++) {
+        msg += '<li>';
+        for (var j = 0; j < sets[i].length; j++) {
+          if (j) {
+            msg += ', ';
+          }
+          msg += sets[i][j].translateCard();
+        }
+        msg += '</li>';
+      }
+      if (sets.length) {
+        msg += '</ul>';
+      }
+      setMessage(msg, 'info', 0);
     };
   });

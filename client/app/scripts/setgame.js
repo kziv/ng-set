@@ -362,7 +362,34 @@ SetGame.prototype.tutorialThirdCard = function(card1, card2) {
  * @question Should the game own this or the board?
  */
 SetGame.prototype.tutorialActiveSets = function() {
-  
+
+  var sets = [];
+
+  var boardCards = this.board.cards;
+
+  // For each card on the board...
+  for (var idxCard1 = 0; idxCard1 < boardCards.length; idxCard1++) {
+    var card1 = boardCards[idxCard1];
+
+    // For each card after the first card...
+    for (var idxCard2 = (idxCard1 + 1); idxCard2 < boardCards.length; idxCard2++) {
+      var card2 = boardCards[idxCard2];
+
+      // For each card after the second card...
+      for (var idxCard3 = (idxCard2 + 1); idxCard3 < boardCards.length; idxCard3++) {
+        var card3 = boardCards[idxCard3];
+
+        // If the 3 cards make a set, add them to the stack
+        if (this.checkSet(card1, card2, card3)) {
+          sets.push([card1, card2, card3]);
+        }
+      }
+    }
+    
+  }
+
+  return sets;
+
 };
 
 /**
