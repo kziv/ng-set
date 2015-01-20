@@ -58,7 +58,7 @@ angular.module('clientApp')
           // @todo replace this with event listener for max cards selected
           
           if (board.selectedCards.length === SetGameBoard.maxSelectedCards) {
-            var isSet = board.checkSet();
+            var isSet = game.checkSet(board.selectedCards[0], board.selectedCards[1], board.selectedCards[2]);
             if (isSet) {
               setMessage('This is a set!', 'success');
               $scope.game.board.removeSelectedCards();

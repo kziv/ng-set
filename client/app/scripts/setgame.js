@@ -126,7 +126,6 @@ function SetGameBoard(deck) {
   
   this.cards         = []; // Cards currently on the board
   this.deck          = deck; // The deck of unplayed cards for this game
-  this.errors        = []; // Error stack for non-Set trios
   this.selectedCards = []; // Cards currently selected for Set testing
 
   // ---------- Init ---------- //
@@ -267,17 +266,35 @@ SetGameBoard.prototype.removeSelectedCards = function() {
 
 };
 
+/* ======================== GAME CONTROLLER ======================== */
+
+function SetGame() {
+  
+  this.score  = 0; // Current score (number of Sets found)
+  
+  this.deck   = new SetGameDeck();           // The current deck in use. Instance of setGameDeck.
+  this.board  = new SetGameBoard(this.deck); // The current game board in use. Instance of setGameBoard.
+  this.errors = [];                          // Error stack
+
+  // Let the world know this is done
+  //var event = new CustomEvent('gameInitialized', { detail: {}});
+  //this.dispatchEvent(event); // @todo fire this!
+
+}
+
 /**
  * Checks whether the selected cards are a valid Set
+ *
+ * @todo Is the error stack even needed?
  *
  * @return bool
  *   true if a Set, false if not
  */
-SetGameBoard.prototype.checkSet = function() {
+SetGame.prototype.checkSet = function(card1, card2, card3) {
 
   // Make sure we have the requisite number of cards to make a Set
-  if (this.selectedCards.length !== SetGameBoard.maxSelectedCards) {
-    throw new SetGameException('Incorrect number of cards to make a Set.');
+  if (!(card1 instanceof SetGameCard) || !(card2 instanceof SetGameCard) || !(card3 instanceof SetGameCard)) {
+    throw new SetGameException('Incorrect number of cards to make a Set..', {card1: card1, card2: card2, card3: card3});
   }
 
   function isSame(val1, val2, val3) {
@@ -286,13 +303,9 @@ SetGameBoard.prototype.checkSet = function() {
   function isDifferent(val1, val2, val3) {
     return !(val1 === val2 || val1 === val3 || val2 === val3);
   }
-
-  var card1 = this.selectedCards[0];
-  var card2 = this.selectedCards[1];
-  var card3 = this.selectedCards[2];
   
   // Clear the error stack for new trio verification
-  this.errors = []; // @todo make this happen on checkSet event instead of forced?
+  this.errors = []; // @todo make this happen on checkSet event instead of forced? What about other errors?
 
   // For each property, the 3 values must be all the same or all different        
   for (var attribute in SetGameCard.attributes) {
@@ -304,21 +317,6 @@ SetGameBoard.prototype.checkSet = function() {
   return !!!(this.errors.length);
 
 };
-
-/* ======================== GAME CONTROLLER ======================== */
-
-function SetGame() {
-  
-  this.score  = 0; // Current score (number of Sets found)
-  
-  this.deck   = new SetGameDeck();           // The current deck in use. Instance of setGameDeck.
-  this.board  = new SetGameBoard(this.deck); // The current game board in use. Instance of setGameBoard.
-
-  // Let the world know this is done
-  //var event = new CustomEvent('gameInitialized', { detail: {}});
-  //this.dispatchEvent(event); // @todo fire this!
-
-}
 
 /**
  * Given two cards, finds the third card that would complete a Set.
