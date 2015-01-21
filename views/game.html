@@ -1,0 +1,26 @@
+<div class="row">
+  <button type="button" class="btn btn-primary" ng-click="newGame()">New Game</button>
+
+  <div class="btn-group pull-right" role="group" aria-label="Tutorial options">
+    <button type="button" class="btn btn-default" ng-click="showMatchingCard()" ng-disabled="game.board.selectedCards.length !== 2">Show Matching Card</button>
+    <button type="button" class="btn btn-default" ng-click="showPossibleSets()">Show Possible Sets</button>
+  </div>
+</div>
+
+<div class="jumbotron row">
+  <div class="row">
+    <h4 class="pull-left">Remaining Cards: {{game.deck.cards.length}}</h4>
+    <h4 class="pull-right">Sets Found: {{game.score}}</h4>
+  </div>
+
+  <div id="messages" class="row">
+    <div class="alert animate-show" ng-class="error.style" ng-show="error.message.length" role="alert">
+      <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+      <span ng-bind-html="error.message"></span>
+    </div>
+  </div>
+  <div class="card col-md-4" ng-repeat="card in game.board.cards">
+    <img ng-src="/images/cards/{{card.colorText}}-{{card.countText}}-{{card.fillText}}-{{card.shapeText}}.gif" ng-click="selectCard($event, card)" title="{{card.description}}" class="img-rounded" />
+  </div>
+
+</div>
