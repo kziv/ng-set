@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="card col-md-4" ng-repeat="card in game.board.cards">
-    <img ng-src="/images/cards/{{card.colorText}}-{{card.countText}}-{{card.fillText}}-{{card.shapeText}}.gif" ng-click="selectCard($event, card)" title="{{card.description}}" class="img-rounded" />
+    <img ng-src="./images/cards/{{card.colorText}}-{{card.countText}}-{{card.fillText}}-{{card.shapeText}}.gif" ng-click="selectCard($event, card)" title="{{card.description}}" class="img-rounded" />
   </div>
 
 </div>
